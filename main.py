@@ -1,4 +1,4 @@
-import time
+
 from datetime import datetime as dt
 
 REDIRECT = '127.0.0.1'
@@ -15,14 +15,11 @@ def run():
         'facebook.com',
         'www.instagram.com'
     ]
+    if from_hour < dt.now().hour < to_hour:
+        lock(web_sites)
 
-    while True:
-        if from_hour < dt.now().hour < to_hour:
-            lock(web_sites)
-
-        else:
-            unlock(web_sites)
-        time.sleep(10)
+    else:
+        unlock(web_sites)
 
 
 def lock(sites_list):
