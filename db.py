@@ -21,9 +21,8 @@ class DbQueries:
             parameters (string): column names with their
               respective configuration, separated by commas
         """
-        sql_query = f'CREATE TABLE {self.table_name} (?)'
-        self.execute_query(sql_query, self.column)
-        print("create table succesfully")
+        sql_query = f'CREATE TABLE {self.table_name} ({self.id_column} INTEGER PRIMARY KEY, {self.sites_column} VARCHAR(100) UNIQUE)'
+        self.execute_query(sql_query)
 
     def list_data(self):
         """list all the data in the fiven table name
