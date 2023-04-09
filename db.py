@@ -3,7 +3,7 @@ import sqlite3
 
 class DbQueries:
     """Class to automate sqlite3 queries,
-    required: database name
+    required: database name, table name, sites and id columns
     """
 
     def __init__(self, db_name, table_name, sites_column, id_column):
@@ -14,15 +14,22 @@ class DbQueries:
         self.id_column = id_column
 
     def create_table(self):
-        """format an sql query string with the given variables
+        """format a sql query string with the given variables when
+        the object is created
 
-        Args:
-            table_name (string): table name
-            parameters (string): column names with their
-              respective configuration, separated by commas
+        Returns:
+            String: description of the executed query result
         """
-        sql_query = f'CREATE TABLE {self.table_name} ({self.id_column} INTEGER PRIMARY KEY, {self.sites_column} VARCHAR(100) UNIQUE)'
-        self.execute_query(sql_query)
+
+        sql_query = f'''CREATE TABLE {self.table_name}
+        ({self.id_column} INTEGER PRIMARY KEY,
+        {self.sites_column} VARCHAR(100) UNIQUE)'''
+
+        try:
+            self.execute_query(sql_query)
+            return "table created succesfuly"
+        except sqlite3.OperationalError as error:
+            return error
 
     def list_data(self):
         """list all the data in the fiven table name
@@ -39,18 +46,24 @@ class DbQueries:
 
     def add(self, url):
         """inserts a record in a table
-            the given url will be the input in the sql string
-        this functionn will modify the given url so it will
-       with the sqlite execute parameter
+        the given url will be the input in the sql string
+        this function will modify the given url to a tuple type
 
         Args:
             url (string): in this case is the website url to block
-        """
 
-        url = (url,)
-        sql_query = f'INSERT INTO {self.table_name}({self.sites_column}) VALUES (?)'
-        self.execute_query(sql_query, url)
-        print("record added succesfully")
+        Returns:
+            String: description of the query result
+        """
+        try:
+            url = (url,)
+            sql_query = f'''INSERT INTO {self.table_name}
+            ({self.sites_column}) VALUES (?)'''
+
+            self.execute_query(sql_query, url)
+            return f"Record inserted succesfully into {self.table_name}"
+        except sqlite3.Error:
+            return "Failed to insert data into sqlite table"
 
     def delete(self, id):
         """deletes a record by given id
